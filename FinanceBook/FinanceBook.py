@@ -1,5 +1,6 @@
 # Imports
 import math
+import subprocess
 from decimal import Decimal, InvalidOperation
 from dataclasses import dataclass
 from datetime import datetime 
@@ -57,7 +58,7 @@ allowed_date_formats = [
     "%m.%d.%y", #12.31.99
     "%Y.%m.%d", #1999.12.31
     ]
-# setting the base categories
+# setting the default categories
 allowed_categories = {"food", "gas", "groceries", "subscriptions", "utilities"}
 
 ### Classes
@@ -84,7 +85,10 @@ def main():
 #making an brute force clear command
 def clear_screen():
     print("\033[2J\033[H", end="", flush=True)
-    os.system('cls' if os.name == 'nt' else 'clear')
+    if os.name == 'nt':
+        subprocess.run('cls', shell=True, check=False)
+    else:
+        subprocess.run('clear', shell=True, check=False)
 
 
 ## sanitizing functions
@@ -97,7 +101,7 @@ def Sanitize_amount(raw_amount: str):
          return cln_amount, "01. Currency format parsed successfully"
      except InvalidOperation:
          #no number + error code
-         return None, "11. Error invalid currency format"
+         return None, "11. Invalid currency format"
 
 #sanitize category. checks if allowed or returns none and error
 def Sanitize_category(raw_category: str):
@@ -178,7 +182,7 @@ def user_get_expense_field(Field):
         else:
             Field_confirmed = True
 
-    return cln_Field
+    return cln_Field # type: ignore - false positive, cln_Field is guaranteed to be not None here
 
 
 #menu functions
@@ -246,10 +250,10 @@ def menu_helper(selected_menu):
                 menu_function()
                 return
             else:
-                print(f"Error 14. Choose a number between 1 and {len(menu_options)}.")
+                print(f"14. Choose a number between 1 and {len(menu_options)}.")
                 continue
         else:
-            print("Error 15. Input must be a valid number.")
+            print("15. Input must be a valid number.")
             continue
         
 
